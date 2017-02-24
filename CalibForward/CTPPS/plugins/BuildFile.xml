@@ -1,0 +1,13 @@
+<use   name="CondFormats/CTPPSObjects"/>
+<use   name="CondCore/PopCon"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="CondFormats/DataRecord"/>
+<use   name="root"/>
+<use   name="rootcore"/>
+<library   file="myCTPPSRPPosESAnalyzer.cc" name="myCTPPSRPPosESAnalyzer">
+   <flags   EDM_PLUGIN="1"/>
+</library>
+<library   file="myCTPPSPixGainCalibsESAnalyzer.cc" name="myCTPPSPixGainCalibsESAnalyzer">
+   <flags   EDM_PLUGIN="1"/>
+</library>
