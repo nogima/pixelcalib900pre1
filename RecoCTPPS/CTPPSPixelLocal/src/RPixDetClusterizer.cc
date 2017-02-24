@@ -157,7 +157,7 @@ int RPixDetClusterizer::calibrate(unsigned int detId, int adc, int row, int col)
   float pedestal = DetCalib.getPed(col,row,isdead_p,isnoisy_p)*gain;
 
   float vcal = adc*gain - pedestal;
-  int electrons = int(vcal);
+  int electrons = int(vcal*ElectronADCGain_);
 
   return electrons;
 
