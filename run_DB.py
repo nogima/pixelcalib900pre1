@@ -44,7 +44,7 @@ process.RandomNumberGeneratorService.RPixDetDigitizer = cms.PSet(initialSeed =cm
 
 
 process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(2)
+        input = cms.untracked.int32(10)
         )
 
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -119,7 +119,8 @@ process.g4SimHits.Watchers = cms.VPSet(cms.PSet(
 
 process.load("CondCore.CondDB.CondDB_cfi")
 # input database (in this case local sqlite file)
-process.CondDB.connect = 'sqlite_file:/afs/cern.ch/user/n/nogima/CMSSW_9_0_0_pre1/src/CalibForward/CTPPS/ctppspixnew1.db'
+#process.CondDB.connect = 'sqlite_file:/afs/cern.ch/user/n/nogima/CMSSW_9_0_0_pre1/src/CalibForward/CTPPS/ctppspixnew1.db'
+process.CondDB.connect = 'sqlite_file:ctppspixnew1.db'
 
 process.PoolDBESSource = cms.ESSource("PoolDBESSource",
     process.CondDB,
@@ -136,11 +137,14 @@ process.PoolDBESSource = cms.ESSource("PoolDBESSource",
 #process.clusterProd.RPixVerbosity = cms.int32(0)
 process.clusterProd = cms.EDProducer("CTPPSPixelClusterProducer",
                                      label=cms.untracked.string("RPixDetDigitizer"),
-                                     RPixVerbosity = cms.int32(2),
+                                     RPixVerbosity = cms.int32(0),
                                      SeedADCThreshold = cms.int32(50),
                                      ADCThreshold = cms.int32(10),
-ElectronADCGain =cms.double(135.0)
-
+				     ElectronADCGain = cms.double(135.0),
+                                     VCaltoElectronOffset = cms.int32(-414),
+                                     VCaltoElectronGain = cms.int32(65),
+                                     CalibrationFile = cms.string("Gain_Fed_1294_Run_99.root"),
+                                     DAQCalibration = cms.bool(False)
 )
 
 process.g4Simhits_step = cms.Path(process.g4SimHits)

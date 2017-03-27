@@ -47,22 +47,6 @@ CTPPSPixelClusterProducer::~CTPPSPixelClusterProducer() {
 // ------------ method called to produce the data  ------------
 void CTPPSPixelClusterProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   
-// DB access test
-/*
- edm::eventsetup::EventSetupRecordKey recordKey(edm::eventsetup::EventSetupRecordKey::TypeTag::findType("CTPPSPixelGainCalibrationsRcd"));
- if( recordKey.type() == edm::eventsetup::EventSetupRecordKey::TypeTag()) {
-  //record not found
-    std::cout <<"Record \"CTPPSPixelGainCalibrationsRcd"<<"\" does not exist "<<std::endl;
- }
-
- edm::ESHandle<CTPPSPixelGainCalibrations> calhandle;
- iSetup.get<CTPPSPixelGainCalibrationsRcd>().get(calhandle);
- 
- const CTPPSPixelGainCalibrations* pPixelGainCalibrations=calhandle.product();
-    std::cout<<"got CTPPSPixelGainCalibrations* "<< std::endl;
-    std::cout<< "print  pointer address : " ;
-    std::cout << pPixelGainCalibrations << std::endl;
-*/
 // Step A: get inputs
 
 	edm::Handle<edm::DetSetVector<CTPPSPixelDigi> > rpd;
@@ -85,7 +69,7 @@ void CTPPSPixelClusterProducer::produce(edm::Event& iEvent, const edm::EventSetu
 	iSetup.get<CTPPSPixelReadoutRcd>().get("RPix", analysisMask);
 
 // dry checks to be removed
-
+/*
  // print mapping
   printf("* DAQ mapping\n");
   for (const auto &p : mapping->ROCMapping)
@@ -97,9 +81,10 @@ void CTPPSPixelClusterProducer::produce(edm::Event& iEvent, const edm::EventSetu
     std::cout << "    " << p.first
       << ": fullMask=" << p.second.fullMask
 	      << ", number of masked pixels " << p.second.maskedPixels.size() << std::endl;
-    
+  
 
   }
+*/
 
 // get calibration DB
  theGainCalibrationDB.getDB(iEvent,iSetup);
@@ -129,12 +114,12 @@ void CTPPSPixelClusterProducer::run(const edm::DetSetVector<CTPPSPixelDigi> &inp
     {
       edm::DetSet<CTPPSPixelCluster> &ds_cluster = output.find_or_insert(ds_digi.id);
  
-      clusterizer_.buildClusters(ds_digi.id, ds_digi.data, ds_cluster.data);
+      clusterizer_.buildClusters(ds_digi.id, ds_digi.data, ds_cluster.data, theGainCalibrationDB.getCalibs());
 
 //-----------------------------------
       unsigned int cluN=0;
       for(std::vector<CTPPSPixelCluster>::iterator iit = ds_cluster.data.begin(); iit != ds_cluster.data.end(); iit++){
-	
+
 	if(verbosity_)	std::cout << "Cluster " << ++cluN <<" avg row " << (*iit).avg_row()<< " avg col " << (*iit).avg_col()<<std::endl;
 
 

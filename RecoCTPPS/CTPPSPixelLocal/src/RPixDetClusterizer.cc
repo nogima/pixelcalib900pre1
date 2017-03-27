@@ -4,10 +4,12 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+
+#include "CondFormats/CTPPSReadoutObjects/interface/CTPPSPixelDAQCalibration.h"
 #include "CondFormats/CTPPSObjects/interface/CTPPSPixelGainCalibrations.h"
 #include "CondFormats/DataRecord/interface/CTPPSPixelGainCalibrationsRcd.h"
 
-//#include "RecoCTPPS/CTPPSPixelLocal/interface/RPixDetClusterizer.h"
+#include "RecoCTPPS/CTPPSPixelLocal/interface/RPixDetClusterizer.h"
 #include "Geometry/VeryForwardGeometry/interface/CTPPSPixelTopology.h"
 
 #include "RecoCTPPS/CTPPSPixelLocal/interface/CTPPSPixelGainCalibrationDBService.h"
@@ -20,11 +22,17 @@ verbosity_ = conf.getParameter<int>("RPixVerbosity");
 SeedADCThreshold_ = conf.getParameter<int>("SeedADCThreshold");
 ADCThreshold_ = conf.getParameter<int>("ADCThreshold");
 ElectronADCGain_ = conf.getParameter<double>("ElectronADCGain");
+VcaltoElectronGain_ = conf.getParameter<int>("VCaltoElectronGain");
+VcaltoElectronOffset_ = conf.getParameter<int>("VCaltoElectronOffset");
+DAQCalibration_ = conf.getParameter<bool>("DAQCalibration");
+CalibrationFile_ = conf.getParameter<string>("CalibrationFile");
+theDAQcalibration = new CTPPSPixelDAQCalibration(conf);
+theDAQcalibration->setDAQCalibrationFile(CalibrationFile_);
 }
 
 RPixDetClusterizer::~RPixDetClusterizer(){}
 
-void RPixDetClusterizer::buildClusters(unsigned int detId, const std::vector<CTPPSPixelDigi> &digi, std::vector<CTPPSPixelCluster> &clusters)
+void RPixDetClusterizer::buildClusters(unsigned int detId, const std::vector<CTPPSPixelDigi> &digi, std::vector<CTPPSPixelCluster> &clusters, const CTPPSPixelGainCalibrations * pcalibrations)
 {
 
  if(verbosity_) std::cout<<" RPixDetClusterizer "<<detId<<" received digi.size()="<<digi.size()<<std::endl;
@@ -42,12 +50,13 @@ if(verbosity_)  for(unsigned int i=0; i<digi.size();i++)std::cout<< digi[i].adc(
    int row = (*RPdit).row();
    int column = (*RPdit).column();
    int adc = (*RPdit).adc();
-   int electrons = calibrate(detId,adc,row,column);
+   int electrons = calibrate(detId,adc,row,column,pcalibrations);
+
+   std::cout << "detId = " << detId << "  row = " << row << "  column = "  << column << "  adc = " << adc << "  electrons = " << electrons << std::endl; 
+
 //calibrate digi and store the new ones (it still does nothing!!)
    RPixCalibDigi calibDigi(row,column,adc,electrons);
    calib_rpix_digi_set_.insert(calibDigi);
-
-
  }
  if(verbosity_) std::cout<<" RPix set size = "<<calib_rpix_digi_set_.size()<<std::endl;
 // storing the seeds
@@ -64,9 +73,8 @@ if(verbosity_)  for(unsigned int i=0; i<digi.size();i++)std::cout<< digi[i].adc(
 
    } 
  }
+
  if(verbosity_) std::cout<<" SeedVector size = "<<SeedVector_.size()<<std::endl;
-
-
 
 //----
 // Looping on the seeds to make a cluster around the seed
@@ -144,20 +152,28 @@ void RPixDetClusterizer::make_cluster(RPixCalibDigi aSeed,  std::vector<CTPPSPix
 
 }
 
+int RPixDetClusterizer::calibrate(unsigned int detId, int adc, int row, int col, const CTPPSPixelGainCalibrations *pcalibrations){
 
-int RPixDetClusterizer::calibrate(unsigned int detId, int adc, int row, int col){
-
-  CTPPSPixelGainCalibration DetCalib = thecalibration.pPixelGainCalibrations->getGainCalibration(detId);
   bool isnoisy_g=false;  
   bool isdead_g=false;
   bool isnoisy_p=false;
   bool isdead_p=false;
+  float gain=0;
+  float pedestal=0;
 // double -> float
-  float gain = DetCalib.getGain(col,row,isdead_g,isnoisy_g);
-  float pedestal = DetCalib.getPed(col,row,isdead_p,isnoisy_p)*gain;
 
+  if(DAQCalibration_){
+   theDAQcalibration->getDAQCalibration(detId,row,col,gain,pedestal);
+  }else{
+
+    detId = 2014314496; //just one plane on test DB file 
+
+    CTPPSPixelGainCalibration DetCalibs = pcalibrations->getGainCalibration(detId);
+    gain = DetCalibs.getGain(col,row,isdead_g,isnoisy_g);
+    pedestal = DetCalibs.getPed(col,row,isdead_p,isnoisy_p)*gain;
+  }
   float vcal = adc*gain - pedestal;
-  int electrons = int(vcal*ElectronADCGain_);
+  int electrons = int(vcal*VcaltoElectronGain_ + VcaltoElectronOffset_);
 
   return electrons;
 

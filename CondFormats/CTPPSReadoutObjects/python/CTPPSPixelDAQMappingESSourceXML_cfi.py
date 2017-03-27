@@ -11,4 +11,4 @@ ctppsPixelDAQMappingESSourceXML = cms.ESSource("CTPPSPixelDAQMappingESSourceXML"
             maskFileNames = cms.vstring("CondFormats/CTPPSReadoutObjects/xml/rpix_channel_mask.xml")
             )
         )
-                                               )
+		)

@@ -14,7 +14,8 @@
 #include "DataFormats/CTPPSDigi/interface/CTPPSPixelDigi.h"
 #include "DataFormats/CTPPSDigi/interface/CTPPSPixelDigiCollection.h"
 #include "DataFormats/CTPPSReco/interface/CTPPSPixelCluster.h"
-
+#include "CondFormats/CTPPSReadoutObjects/interface/CTPPSPixelDAQCalibration.h"
+#include "CondFormats/CTPPSObjects/interface/CTPPSPixelGainCalibrations.h"
 #include "RecoCTPPS/CTPPSPixelLocal/interface/CTPPSPixelGainCalibrationDBService.h"
 
 #include <vector>
@@ -42,19 +43,18 @@ RPixCalibDigi() : CTPPSPixelDigi(){}
 
 };
 
-
 class RPixDetClusterizer{
 
 public:
 
   RPixDetClusterizer(edm::ParameterSet const& conf);
 
-//  CTPPSPixelGainCalibrationDBService theGainCalibrationDB;
-  CTPPSPixelGainCalibrationDBService thecalibration;
-  void buildClusters(unsigned int detId, const std::vector<CTPPSPixelDigi> &digi, std::vector<CTPPSPixelCluster> &clusters);
+  CTPPSPixelDAQCalibration * theDAQcalibration;
+
+  void buildClusters(unsigned int detId, const std::vector<CTPPSPixelDigi> &digi, std::vector<CTPPSPixelCluster> &clusters, const CTPPSPixelGainCalibrations * pcalibration);
   void make_cluster( RPixCalibDigi aSeed,  std::vector<CTPPSPixelCluster> &clusters );
   ~RPixDetClusterizer();
-  int calibrate(unsigned int, int,int,int);
+  int calibrate(unsigned int, int, int, int ,const CTPPSPixelGainCalibrations * pcalibration);
 
 private:
 
@@ -65,13 +65,13 @@ private:
   unsigned short SeedADCThreshold_;
   unsigned short ADCThreshold_;
   double ElectronADCGain_;
-
+  int VcaltoElectronGain_;
+  int VcaltoElectronOffset_;
+  bool DAQCalibration_;
+  string CalibrationFile_;
   std::vector<RPixCalibDigi> SeedVector_;
-
   
 };
-
-
 
 class tempCluster{
 

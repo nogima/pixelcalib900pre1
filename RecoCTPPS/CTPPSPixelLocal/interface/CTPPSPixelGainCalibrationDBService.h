@@ -20,7 +20,6 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "CondFormats/CTPPSObjects/interface/CTPPSPixelGainCalibrations.h"
-
 class CTPPSPixelGainCalibrationDBService
 {
 
@@ -29,7 +28,7 @@ class CTPPSPixelGainCalibrationDBService
       virtual ~CTPPSPixelGainCalibrationDBService();
       virtual void getDB(const edm::Event& e, const edm::EventSetup& c);
       const CTPPSPixelGainCalibrations* pPixelGainCalibrations;
-
+      const CTPPSPixelGainCalibrations* getCalibs() const {return pPixelGainCalibrations;}
    private:
       CTPPSPixelGainCalibrationDBService(const CTPPSPixelGainCalibrationDBService&); // stop default
 
