@@ -2,7 +2,7 @@
 #define CondFormats_CTPPSReadoutObjects_CTPPSPixelDAQCalibration_h
 // -*- C++ -*-
 //
-// Package:     CondFormats/CTPPSReadoutObjects
+// Package:     CalibForward/CTPPSPixelCalibration
 // Class  :     CTPPSPixelDAQCalibration
 // 
 /**\class CTPPSPixelDAQCalibration CTPPSPixelDAQCalibration.h "CondFormats/CTPPSReadoutObjects/interface/CTPPSPixelDAQCalibration.h"

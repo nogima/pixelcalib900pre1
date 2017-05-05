@@ -143,8 +143,9 @@ process.clusterProd = cms.EDProducer("CTPPSPixelClusterProducer",
 				     ElectronADCGain = cms.double(135.0),
                                      VCaltoElectronOffset = cms.int32(-414),
                                      VCaltoElectronGain = cms.int32(65),
-                                     CalibrationFile = cms.string("Gain_Fed_1294_Run_99.root"),
-                                     DAQCalibration = cms.bool(False)
+#                                     CalibrationFile = cms.string("Gain_Fed_1294_Run_99.root"),
+                                     CalibrationFile = cms.string("Gain_Fed_1462-1463_Run_107.root"),
+                                     DAQCalibration = cms.bool(True)
 )
 
 process.g4Simhits_step = cms.Path(process.g4SimHits)

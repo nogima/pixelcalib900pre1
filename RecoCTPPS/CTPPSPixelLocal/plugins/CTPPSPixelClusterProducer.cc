@@ -4,22 +4,18 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+
 #include "CondFormats/CTPPSObjects/interface/CTPPSPixelGainCalibrations.h"
 #include "CondFormats/DataRecord/interface/CTPPSPixelGainCalibrationsRcd.h"
 #include "RecoCTPPS/CTPPSPixelLocal/interface/CTPPSPixelGainCalibrationDBService.h"
-
 #include "RecoCTPPS/CTPPSPixelLocal/interface/RPixDetClusterizer.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
 
 //needed for the geometry:
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-
 
 #include <vector>
 #include <memory>

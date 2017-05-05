@@ -1,6 +1,7 @@
 // -*- C++ -*-
 //
-// Package:     CondFormats/CTPPSReadoutObjects
+// Package:     CalibForward/CTPPSPixelCalibration
+// calibration
 // Class  :     CTPPSPixelDAQCalibration
 // 
 // Implementation:
@@ -9,7 +10,7 @@
 // Original Author:  Helio Nogima
 //         Created:  Wed, 15 Mar 2017 02:15:07 GMT
 //
-#include "CondFormats/CTPPSReadoutObjects/interface/CTPPSPixelDAQCalibration.h"
+#include "CalibForward/CTPPS/interface/CTPPSPixelDAQCalibration.h"
 #include "CondFormats/CTPPSReadoutObjects/interface/CTPPSPixelIndices.h"
 #include <iostream>
 #include "TFile.h"
@@ -47,23 +48,25 @@ void CTPPSPixelDAQCalibration::getDAQCalibration(unsigned int detid, int row, in
   int rowROC;
   if (arm==0) sector=45;
   if (arm==1) sector=56;
-//  std::cout << "arm = " << arm << "  rp = " << pot  << "  station = "  << station << "  plane = " << plane << std::endl;
 
-// To be removed - test file including only arm==0. pot==2 and plane<5
-  if (arm==1) sector=45;
-  if (plane==5) plane=4;
-  if (pot==3) pot=2;
+  std::cout << "arm = " << arm << "  rp = " << pot  << "  station = "  << station << "  plane = " << plane << std::endl;
 
   if (modulepixels->transformToROC(col,row,roc,colROC,rowROC)==0){
-   sprintf(pathgains,"CTPPS/CTPPS_SEC%d/CTPPS_SEC%d_RP00%d/CTPPS_SEC%d_RP00%d_PLN%d/CTPPS_SEC%d_RP00%d_PLN%d_ROC%d_Slope2D",sector,sector,pot,sector,pot,plane,sector,pot,plane,roc);
-   sprintf(pathpedestals,"CTPPS/CTPPS_SEC%d/CTPPS_SEC%d_RP00%d/CTPPS_SEC%d_RP00%d_PLN%d/CTPPS_SEC%d_RP00%d_PLN%d_ROC%d_Intercept2D",sector,sector,pot,sector,pot,plane,sector,pot,plane,roc);
+
+// TOTEM RP numbering scheme (https://indico.cern.ch/event/626748/contributions/2531619/attachments/1438891/2214488/FRavera_CTPPSGM_April2017.pdf) 
+
+   sprintf(pathgains,"CTPPS/CTPPS_SEC%d/CTPPS_SEC%d_RP%d%d%d/CTPPS_SEC%d_RP%d%d%d_PLN%d/CTPPS_SEC%d_RP%d%d%d_PLN%d_ROC%d_Slope2D",sector,sector,arm,station,pot,sector,arm,station,pot,plane,sector,arm,station,pot,plane,roc);
+   sprintf(pathpedestals,"CTPPS/CTPPS_SEC%d/CTPPS_SEC%d_RP%d%d%d/CTPPS_SEC%d_RP%d%d%d_PLN%d/CTPPS_SEC%d_RP%d%d%d_PLN%d_ROC%d_Intercept2D",sector,sector,arm,station,pot,sector,arm,station,pot,plane,sector,arm,station,pot,plane,roc);
 
    if(!(gainshisto = (TH2F*)fp->Get(pathgains))) {
     std::cout << pathgains << " not found." << std::endl;
+    gain=0;
    }
 
    if(!(pedestalshisto = (TH2F*)fp->Get(pathpedestals))) {
     std::cout << pathpedestals << " not found." << std::endl;
+    pedestal=0;
+
     return;
   }
 

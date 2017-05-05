@@ -5,7 +5,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
-#include "CondFormats/CTPPSReadoutObjects/interface/CTPPSPixelDAQCalibration.h"
+#include "CalibForward/CTPPS/interface/CTPPSPixelDAQCalibration.h"
 #include "CondFormats/CTPPSObjects/interface/CTPPSPixelGainCalibrations.h"
 #include "CondFormats/DataRecord/interface/CTPPSPixelGainCalibrationsRcd.h"
 
@@ -13,6 +13,7 @@
 #include "Geometry/VeryForwardGeometry/interface/CTPPSPixelTopology.h"
 
 #include "RecoCTPPS/CTPPSPixelLocal/interface/CTPPSPixelGainCalibrationDBService.h"
+//#include "CalibForward/CTPPS/interface/CTPPSPixelGainCalibrationDBService.h"
 #include "RecoCTPPS/CTPPSPixelLocal/interface/CTPPSPixelClusterProducer.h"
 
 RPixDetClusterizer::RPixDetClusterizer(edm::ParameterSet const& conf):
@@ -51,9 +52,9 @@ if(verbosity_)  for(unsigned int i=0; i<digi.size();i++)std::cout<< digi[i].adc(
    int column = (*RPdit).column();
    int adc = (*RPdit).adc();
    int electrons = calibrate(detId,adc,row,column,pcalibrations);
-
+   if (verbosity_>1) {
    std::cout << "detId = " << detId << "  row = " << row << "  column = "  << column << "  adc = " << adc << "  electrons = " << electrons << std::endl; 
-
+   }
 //calibrate digi and store the new ones (it still does nothing!!)
    RPixCalibDigi calibDigi(row,column,adc,electrons);
    calib_rpix_digi_set_.insert(calibDigi);
